@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Portfolio project managed from Nexsoll admin.
+model Project {
+  id String @id @default(cuid())
+
+  slug  String @unique
+  title String
+  category String @default("")
+
+  projectType String? @map("project_type")
+  desc        String  @db.Text
+
+  image String?
+  link  String?
+
+  client   String?
+  timeline String?
+  services String? @db.Text
+
+  overview  String? @db.Text
+  challenge String? @db.Text
+  solution  String? @db.Text
+
+  clientRequirement String? @map("client_requirement") @db.Text
+  howWeFulfilled    String? @map("how_we_fulfilled") @db.Text
+
+  keyFeatures String[] @default([]) @map("key_features")
+  techStack   String[] @default([]) @map("tech_stack")
+  process     String[] @default([])
+  outcomes    String[] @default([])
+  tags        String[] @default([])
+  gallery     String[] @default([])
+
+  results Json @default("[]")
+
+  ctaTitle String? @map("cta_title")
+  accent   String?
+  theme    Json?
+
+  status     String  @default("draft") // draft | published | in_progress | completed | archived
+  isFeatured Boolean @default(false) @map("is_featured")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([isFeatured])
+  @@index([createdAt])
+  @@map("projects")
+}
+
+/// Website contact form submissions shown in admin Leads.
+model Lead {
+  id String @id @default(cuid())
+
+  formType String @default("contact") @map("form_type") // contact
+  status   String @default("new") // new | read | replied
+
+  fullName String @map("full_name")
+  email    String
+  phone    String?
+
+  subject String
+  message String @db.Text
+
+  companyName       String? @map("company_name")
+  projectType       String? @map("project_type")
+  estimatedBudget   String? @map("estimated_budget")
+  preferredTimeline String? @map("preferred_timeline")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([formType])
+  @@index([status])
+  @@index([createdAt])
+  @@map("leads")
+}
